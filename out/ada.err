@@ -1,0 +1,20 @@
+/home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/home/abcheng/workspace/llmsys_s25_hw4/project/run_pipeline.py", line 173, in <module>
+    run_pp(
+  File "/home/abcheng/workspace/llmsys_s25_hw4/project/run_pipeline.py", line 54, in run_pp
+    model.parallelize()
+  File "/home/abcheng/workspace/llmsys_s25_hw4/pipeline/model.py", line 259, in parallelize
+    self.transformer.parallelize(self.device_map)
+  File "/home/abcheng/workspace/llmsys_s25_hw4/pipeline/model.py", line 43, in parallelize
+    self.wte = self.wte.to(self.first_device)
+  File "/home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1173, in to
+    return self._apply(convert)
+  File "/home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py", line 804, in _apply
+    param_applied = fn(param)
+  File "/home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1159, in convert
+    return t.to(
+  File "/home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py", line 293, in _lazy_init
+    torch._C._cuda_init()
+RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.

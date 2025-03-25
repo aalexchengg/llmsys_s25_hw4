@@ -1,0 +1,2123 @@
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Thu_Mar_28_02:18:24_PDT_2024
+Cuda compilation tools, release 12.4, V12.4.131
+Build cuda_12.4.r12.4/compiler.34097967_0
+Sat Mar 22 17:34:18 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L40                     On  |   00000000:01:00.0 Off |                    0 |
+| N/A   34C    P0            104W /  270W |       1MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA L40                     On  |   00000000:C1:00.0 Off |                    0 |
+| N/A   39C    P0            106W /  270W |       1MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 30 deselected / 4 selected
+
+tests/test_pipeline.py::test_clock_cycles_0 PASSED                       [ 25%]
+tests/test_pipeline.py::test_clock_cycles_1 PASSED                       [ 50%]
+tests/test_pipeline.py::test_split_module_0 FAILED                       [ 75%]
+tests/test_pipeline.py::test_split_module_1 FAILED                       [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_split_module_0 ______________________________
+
+    @pytest.mark.a4_2_1
+    def test_split_module_0():
+        model = nn.Sequential(
+>             nn.Conv2d(10,20,5).to('cuda:0'),
+              nn.Conv2d(20,64,5).to('cuda:0'),
+              nn.Conv2d(64,128,5).to('cuda:1'),
+        )
+
+
+tests/test_pipeline.py:38: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x150600200040>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x15053d711d30>
+        fn         = <function Module.to.<locals>.convert at 0x150600200040>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[[[ 0.0461, -0.0243, -0.0270, -0.0469, -0.0454],
+          [ 0.0564,  0.0339,  0.0245, -...0, -0.0020, -0.0224,  0.0248, -0.0547],
+          [-0.0627,  0.0083,  0.0492,  0.0056,  0.0632]]]], requires_grad=True)
+        recurse    = True
+        self       = Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[[[ 0.0461, -0.0243, -0.0270, -0.0469, -0.0454],
+          [ 0.0564,  0.0339,  0.0245, -...0, -0.0020, -0.0224,  0.0248, -0.0547],
+          [-0.0627,  0.0083,  0.0492,  0.0056,  0.0632]]]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_split_module_1 ______________________________
+
+    @pytest.mark.a4_2_1
+    def test_split_module_1():
+        model = nn.Sequential(
+>             nn.Conv2d(10,20,5).to('cuda:0'),
+              WithDevice(nn.Dropout(0.5), 'cuda:0'),
+              nn.Conv2d(20,64,5).to('cuda:1'),
+        )
+
+
+tests/test_pipeline.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x15053d442670>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x15053d4428b0>
+        fn         = <function Module.to.<locals>.convert at 0x15053d442670>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[[[-1.5291e-03,  5.7037e-02,  3.8622e-02,  4.9459e-02,  1.3179e-02],
+          [ 1.8287e...8.2334e-03],
+          [ 5.5700e-02,  5.5672e-02,  3.4514e-02,  2.7969e-02,  5.6328e-02]]]],
+       requires_grad=True)
+        recurse    = True
+        self       = Conv2d(10, 20, kernel_size=(5, 5), stride=(1, 1))
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[[[-1.5291e-03,  5.7037e-02,  3.8622e-02,  4.9459e-02,  1.3179e-02],
+          [ 1.8287e...8.2334e-03],
+          [ 5.5700e-02,  5.5672e-02,  3.4514e-02,  2.7969e-02,  5.6328e-02]]]],
+       requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_pipeline.py::test_split_module_0 - RuntimeError: CUDA drive...
+FAILED tests/test_pipeline.py::test_split_module_1 - RuntimeError: CUDA drive...
+================== 2 failed, 2 passed, 30 deselected in 1.68s ==================
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 14 deselected / 20 selected
+
+tests/test_pipeline.py::test_forward_0[1-1] FAILED                       [  5%]
+tests/test_pipeline.py::test_forward_0[1-16] FAILED                      [ 10%]
+tests/test_pipeline.py::test_forward_0[1-32] FAILED                      [ 15%]
+tests/test_pipeline.py::test_forward_0[1-64] FAILED                      [ 20%]
+tests/test_pipeline.py::test_forward_0[2-1] FAILED                       [ 25%]
+tests/test_pipeline.py::test_forward_0[2-16] FAILED                      [ 30%]
+tests/test_pipeline.py::test_forward_0[2-32] FAILED                      [ 35%]
+tests/test_pipeline.py::test_forward_0[2-64] FAILED                      [ 40%]
+tests/test_pipeline.py::test_forward_0[4-1] FAILED                       [ 45%]
+tests/test_pipeline.py::test_forward_0[4-16] FAILED                      [ 50%]
+tests/test_pipeline.py::test_forward_0[4-32] FAILED                      [ 55%]
+tests/test_pipeline.py::test_forward_0[4-64] FAILED                      [ 60%]
+tests/test_pipeline.py::test_forward_0[8-1] FAILED                       [ 65%]
+tests/test_pipeline.py::test_forward_0[8-16] FAILED                      [ 70%]
+tests/test_pipeline.py::test_forward_0[8-32] FAILED                      [ 75%]
+tests/test_pipeline.py::test_forward_0[8-64] FAILED                      [ 80%]
+tests/test_pipeline.py::test_forward_0[16-1] FAILED                      [ 85%]
+tests/test_pipeline.py::test_forward_0[16-16] FAILED                     [ 90%]
+tests/test_pipeline.py::test_forward_0[16-32] FAILED                     [ 95%]
+tests/test_pipeline.py::test_forward_0[16-64] FAILED                     [100%]
+
+=================================== FAILURES ===================================
+_____________________________ test_forward_0[1-1] ______________________________
+
+batch_size = 1, split_size = 1
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 1
+split_size = 1
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149de1d24790>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1f060dc0>
+        fn         = <function Module.to.<locals>.convert at 0x149de1d24790>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.3579,  0.4841, -0.3473],
+        [-0.2968,  0.4172, -0.2989],
+        [ 0.2707,  0.1972, -0.2015],
+        [ 0.5234, -0.2873,  0.0749]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.3579,  0.4841, -0.3473],
+        [-0.2968,  0.4172, -0.2989],
+        [ 0.2707,  0.1972, -0.2015],
+        [ 0.5234, -0.2873,  0.0749]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[1-16] _____________________________
+
+batch_size = 16, split_size = 1
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 16
+split_size = 1
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed85670>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed858b0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed85670>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.4931,  0.1200,  0.5397],
+        [ 0.0474,  0.4688, -0.1239],
+        [-0.4800,  0.4755,  0.2594],
+        [ 0.3574, -0.4211,  0.4872]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.4931,  0.1200,  0.5397],
+        [ 0.0474,  0.4688, -0.1239],
+        [-0.4800,  0.4755,  0.2594],
+        [ 0.3574, -0.4211,  0.4872]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[1-32] _____________________________
+
+batch_size = 32, split_size = 1
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 32
+split_size = 1
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed85ca0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed85160>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed85ca0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.2393, -0.4776,  0.1464],
+        [-0.5165, -0.1746, -0.2522],
+        [ 0.2249, -0.4636,  0.4284],
+        [-0.1675,  0.1994,  0.3522]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.2393, -0.4776,  0.1464],
+        [-0.5165, -0.1746, -0.2522],
+        [ 0.2249, -0.4636,  0.4284],
+        [-0.1675,  0.1994,  0.3522]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[1-64] _____________________________
+
+batch_size = 64, split_size = 1
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 64
+split_size = 1
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1f060c10>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed96670>
+        fn         = <function Module.to.<locals>.convert at 0x149d1f060c10>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.5616, -0.4502, -0.1902],
+        [-0.2559, -0.0904, -0.0314],
+        [-0.1282,  0.5267,  0.5062],
+        [-0.1187, -0.1769, -0.2612]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.5616, -0.4502, -0.1902],
+        [-0.2559, -0.0904, -0.0314],
+        [-0.1282,  0.5267,  0.5062],
+        [-0.1187, -0.1769, -0.2612]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[2-1] ______________________________
+
+batch_size = 1, split_size = 2
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 1
+split_size = 2
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed968b0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed96dc0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed968b0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.5098, -0.3778, -0.4988],
+        [ 0.3818, -0.4480, -0.1159],
+        [ 0.5125, -0.4197, -0.4998],
+        [ 0.3233, -0.1915,  0.0227]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.5098, -0.3778, -0.4988],
+        [ 0.3818, -0.4480, -0.1159],
+        [ 0.5125, -0.4197, -0.4998],
+        [ 0.3233, -0.1915,  0.0227]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[2-16] _____________________________
+
+batch_size = 16, split_size = 2
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 16
+split_size = 2
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed96430>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed96ee0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed96430>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.2323, -0.3429,  0.5240],
+        [ 0.0778, -0.5128,  0.5714],
+        [ 0.5252,  0.5184,  0.5443],
+        [ 0.4526, -0.4855, -0.4486]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.2323, -0.3429,  0.5240],
+        [ 0.0778, -0.5128,  0.5714],
+        [ 0.5252,  0.5184,  0.5443],
+        [ 0.4526, -0.4855, -0.4486]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[2-32] _____________________________
+
+batch_size = 32, split_size = 2
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 32
+split_size = 2
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed851f0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed85d30>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed851f0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.3222, -0.2199,  0.1611],
+        [ 0.2721, -0.4078,  0.0411],
+        [-0.2464,  0.1047, -0.1626],
+        [-0.0006, -0.2654, -0.1925]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.3222, -0.2199,  0.1611],
+        [ 0.2721, -0.4078,  0.0411],
+        [-0.2464,  0.1047, -0.1626],
+        [-0.0006, -0.2654, -0.1925]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[2-64] _____________________________
+
+batch_size = 64, split_size = 2
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 64
+split_size = 2
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed85ca0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed85160>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed85ca0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.2304,  0.0396, -0.2548],
+        [ 0.3246, -0.0861,  0.2496],
+        [ 0.4915, -0.0864, -0.0251],
+        [-0.3528, -0.4313,  0.1810]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.2304,  0.0396, -0.2548],
+        [ 0.3246, -0.0861,  0.2496],
+        [ 0.4915, -0.0864, -0.0251],
+        [-0.3528, -0.4313,  0.1810]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[4-1] ______________________________
+
+batch_size = 1, split_size = 4
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 1
+split_size = 4
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed85670>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed93670>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed85670>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.4836,  0.2341, -0.5614],
+        [ 0.4938, -0.2343,  0.2014],
+        [-0.3979, -0.4054, -0.2580],
+        [ 0.2983,  0.5714,  0.0896]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.4836,  0.2341, -0.5614],
+        [ 0.4938, -0.2343,  0.2014],
+        [-0.3979, -0.4054, -0.2580],
+        [ 0.2983,  0.5714,  0.0896]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[4-16] _____________________________
+
+batch_size = 16, split_size = 4
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 16
+split_size = 4
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed88ca0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed885e0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed88ca0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.3880, -0.4112,  0.0148],
+        [ 0.4287,  0.0135,  0.4573],
+        [-0.2346, -0.0705,  0.1069],
+        [-0.0662, -0.1443,  0.1745]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.3880, -0.4112,  0.0148],
+        [ 0.4287,  0.0135,  0.4573],
+        [-0.2346, -0.0705,  0.1069],
+        [-0.0662, -0.1443,  0.1745]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[4-32] _____________________________
+
+batch_size = 32, split_size = 4
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 32
+split_size = 4
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1f0b78b0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed93940>
+        fn         = <function Module.to.<locals>.convert at 0x149d1f0b78b0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.3817,  0.1204, -0.5092],
+        [ 0.3066,  0.2266, -0.3823],
+        [-0.2733,  0.3416, -0.4083],
+        [ 0.3858,  0.0124,  0.3484]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.3817,  0.1204, -0.5092],
+        [ 0.3066,  0.2266, -0.3823],
+        [-0.2733,  0.3416, -0.4083],
+        [ 0.3858,  0.0124,  0.3484]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[4-64] _____________________________
+
+batch_size = 64, split_size = 4
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 64
+split_size = 4
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed88a60>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed88670>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed88a60>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.2292, -0.0444, -0.1440],
+        [-0.3553, -0.3656,  0.4252],
+        [ 0.2778, -0.1091, -0.4141],
+        [ 0.0246, -0.4822,  0.2913]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.2292, -0.0444, -0.1440],
+        [-0.3553, -0.3656,  0.4252],
+        [ 0.2778, -0.1091, -0.4141],
+        [ 0.0246, -0.4822,  0.2913]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[8-1] ______________________________
+
+batch_size = 1, split_size = 8
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 1
+split_size = 8
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed93a60>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed93790>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed93a60>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.0313, -0.2590, -0.0266],
+        [ 0.3891,  0.5233,  0.5207],
+        [-0.2616,  0.5353,  0.2064],
+        [ 0.5722,  0.2487,  0.3000]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.0313, -0.2590, -0.0266],
+        [ 0.3891,  0.5233,  0.5207],
+        [-0.2616,  0.5353,  0.2064],
+        [ 0.5722,  0.2487,  0.3000]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[8-16] _____________________________
+
+batch_size = 16, split_size = 8
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 16
+split_size = 8
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed96670>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed96ca0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed96670>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.5006,  0.3164,  0.1348],
+        [ 0.0351, -0.2149, -0.0223],
+        [ 0.5345,  0.0450,  0.1835],
+        [ 0.2955, -0.2753, -0.5216]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.5006,  0.3164,  0.1348],
+        [ 0.0351, -0.2149, -0.0223],
+        [ 0.5345,  0.0450,  0.1835],
+        [ 0.2955, -0.2753, -0.5216]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[8-32] _____________________________
+
+batch_size = 32, split_size = 8
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 32
+split_size = 8
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed93700>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed93dc0>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed93700>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.3100, -0.4194, -0.2022],
+        [ 0.0945, -0.4883,  0.1675],
+        [ 0.1046,  0.5578, -0.5565],
+        [ 0.3979,  0.4020,  0.4929]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.3100, -0.4194, -0.2022],
+        [ 0.0945, -0.4883,  0.1675],
+        [ 0.1046,  0.5578, -0.5565],
+        [ 0.3979,  0.4020,  0.4929]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[8-64] _____________________________
+
+batch_size = 64, split_size = 8
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 64
+split_size = 8
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1edac280>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1edace50>
+        fn         = <function Module.to.<locals>.convert at 0x149d1edac280>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.3431,  0.2296, -0.4696],
+        [ 0.4487, -0.4253,  0.2786],
+        [-0.0744, -0.2087, -0.0437],
+        [ 0.5206, -0.2022,  0.0332]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.3431,  0.2296, -0.4696],
+        [ 0.4487, -0.4253,  0.2786],
+        [-0.0744, -0.2087, -0.0437],
+        [ 0.5206, -0.2022,  0.0332]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+_____________________________ test_forward_0[16-1] _____________________________
+
+batch_size = 1, split_size = 16
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 1
+split_size = 16
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed880d0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1ed88940>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed880d0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.3466, -0.1074, -0.2945],
+        [ 0.4157, -0.4912,  0.4347],
+        [ 0.2918,  0.3202,  0.0897],
+        [ 0.3411, -0.2881,  0.4602]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.3466, -0.1074, -0.2945],
+        [ 0.4157, -0.4912,  0.4347],
+        [ 0.2918,  0.3202,  0.0897],
+        [ 0.3411, -0.2881,  0.4602]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+____________________________ test_forward_0[16-16] _____________________________
+
+batch_size = 16, split_size = 16
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 16
+split_size = 16
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1edf01f0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1edf0940>
+        fn         = <function Module.to.<locals>.convert at 0x149d1edf01f0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.4567, -0.3562, -0.4748],
+        [ 0.2265, -0.3561, -0.2135],
+        [-0.2801, -0.5524,  0.3639],
+        [ 0.1229,  0.3333,  0.2134]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.4567, -0.3562, -0.4748],
+        [ 0.2265, -0.3561, -0.2135],
+        [-0.2801, -0.5524,  0.3639],
+        [ 0.1229,  0.3333,  0.2134]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+____________________________ test_forward_0[16-32] _____________________________
+
+batch_size = 32, split_size = 16
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 32
+split_size = 16
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1ed96ee0>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1edaca60>
+        fn         = <function Module.to.<locals>.convert at 0x149d1ed96ee0>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[-0.5469,  0.0107,  0.5737],
+        [-0.1465,  0.5203, -0.2825],
+        [-0.2164, -0.0674, -0.3969],
+        [ 0.3792,  0.2875, -0.2693]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[-0.5469,  0.0107,  0.5737],
+        [-0.1465,  0.5203, -0.2825],
+        [-0.2164, -0.0674, -0.3969],
+        [ 0.3792,  0.2875, -0.2693]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+____________________________ test_forward_0[16-64] _____________________________
+
+batch_size = 64, split_size = 16
+
+    @pytest.mark.a4_2_2
+    @pytest.mark.parametrize("batch_size", [1, 16, 32, 64])
+    @pytest.mark.parametrize("split_size", [1, 2, 4, 8, 16])
+    # @pytest.mark.parametrize("batch_size", [1])
+    # @pytest.mark.parametrize("split_size", [1, 2])
+    def test_forward_0(batch_size, split_size):
+        model = nn.Sequential(
+>           nn.Linear(3, 4).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+            nn.Linear(4, 5).to('cuda:0'),
+            WithDevice(nn.Sigmoid(), 'cuda:0'),
+        )
+
+batch_size = 64
+split_size = 16
+
+tests/test_pipeline.py:69: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1173: in to
+    return self._apply(convert)
+        args       = ('cuda:0',)
+        convert    = <function Module.to.<locals>.convert at 0x149d1edacc10>
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        kwargs     = {}
+        non_blocking = False
+        self       = Linear(in_features=3, out_features=4, bias=True)
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:804: in _apply
+    param_applied = fn(param)
+        compute_should_use_set_data = <function Module._apply.<locals>.compute_should_use_set_data at 0x149d1edac430>
+        fn         = <function Module.to.<locals>.convert at 0x149d1edacc10>
+        key        = 'weight'
+        param      = Parameter containing:
+tensor([[ 0.5695, -0.4467, -0.5702],
+        [-0.2201, -0.1452, -0.1056],
+        [ 0.5299,  0.1660,  0.4433],
+        [ 0.4996,  0.4514,  0.2633]], requires_grad=True)
+        recurse    = True
+        self       = Linear(in_features=3, out_features=4, bias=True)
+        should_use_swap_tensors = False
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/module.py:1159: in convert
+    return t.to(
+        convert_to_format = None
+        device     = device(type='cuda', index=0)
+        dtype      = None
+        non_blocking = False
+        t          = Parameter containing:
+tensor([[ 0.5695, -0.4467, -0.5702],
+        [-0.2201, -0.1452, -0.1056],
+        [ 0.5299,  0.1660,  0.4433],
+        [ 0.4996,  0.4514,  0.2633]], requires_grad=True)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _lazy_init():
+        global _initialized, _queued_calls
+        if is_initialized() or hasattr(_tls, "is_initializing"):
+            return
+        with _initialization_lock:
+            # We be double-checked locking, boys!  This is OK because
+            # the above test was GIL protected anyway.  The inner test
+            # is for when a thread blocked on some other thread which was
+            # doing the initialization; when they get the lock, they will
+            # find there is nothing left to do.
+            if is_initialized():
+                return
+            # It is important to prevent other threads from entering _lazy_init
+            # immediately, while we are still guaranteed to have the GIL, because some
+            # of the C calls we make below will release the GIL
+            if _is_in_bad_fork():
+                raise RuntimeError(
+                    "Cannot re-initialize CUDA in forked subprocess. To use CUDA with "
+                    "multiprocessing, you must use the 'spawn' start method"
+                )
+            if not hasattr(torch._C, "_cuda_getDeviceCount"):
+                raise AssertionError("Torch not compiled with CUDA enabled")
+            if _cudart is None:
+                raise AssertionError(
+                    "libcudart functions unavailable. It looks like you have a broken build?"
+                )
+            # This function throws if there's a driver initialization error, no GPUs
+            # are found or any other error occurs
+            if "CUDA_MODULE_LOADING" not in os.environ:
+                os.environ["CUDA_MODULE_LOADING"] = "LAZY"
+>           torch._C._cuda_init()
+E           RuntimeError: CUDA driver initialization failed, you might not have a CUDA gpu.
+
+
+../../miniconda3/envs/hw4/lib/python3.9/site-packages/torch/cuda/__init__.py:293: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/test_pipeline.py::test_forward_0[1-1] - RuntimeError: CUDA drive...
+FAILED tests/test_pipeline.py::test_forward_0[1-16] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[1-32] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[1-64] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[2-1] - RuntimeError: CUDA drive...
+FAILED tests/test_pipeline.py::test_forward_0[2-16] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[2-32] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[2-64] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[4-1] - RuntimeError: CUDA drive...
+FAILED tests/test_pipeline.py::test_forward_0[4-16] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[4-32] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[4-64] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[8-1] - RuntimeError: CUDA drive...
+FAILED tests/test_pipeline.py::test_forward_0[8-16] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[8-32] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[8-64] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[16-1] - RuntimeError: CUDA driv...
+FAILED tests/test_pipeline.py::test_forward_0[16-16] - RuntimeError: CUDA dri...
+FAILED tests/test_pipeline.py::test_forward_0[16-32] - RuntimeError: CUDA dri...
+FAILED tests/test_pipeline.py::test_forward_0[16-64] - RuntimeError: CUDA dri...
+====================== 20 failed, 14 deselected in 2.44s =======================

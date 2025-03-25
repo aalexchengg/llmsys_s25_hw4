@@ -28,13 +28,18 @@ class Task:
     """Task is a wrapper around a compute function that can be executed on a worker thread.
     """
     def __init__(
-        self, compute) -> None:
+        self, compute, partition_idx, microbatch_idx) -> None:
         self._compute = compute
         self._grad_enabled = torch.is_grad_enabled()
+        self.partition_idx = partition_idx
+        self.microbatch_idx = microbatch_idx
 
     def compute(self):
         with torch.set_grad_enabled(self._grad_enabled):
             return self._compute()
+    
+    def __repr__(self):
+        return f"partition: {self.partition_idx} microbatch: {self.microbatch_idx}"
 
 
 def worker(in_queue: InQueue, out_queue: OutQueue, device: torch.device) -> None:

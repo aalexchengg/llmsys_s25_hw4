@@ -42,7 +42,13 @@ class GPT2ModelParallel(GPT2ModelCustom):
 
         # BEGIN SOLUTION
         pipe = None
-        raise NotImplementedError("Pipeline Parallel Not Implemented Yet")
+        self.pipeline_parallel = True
+        pipeline = []
+        for module in self.h:
+            pipeline.append(WithDevice(module, _retrieve_device(module)))
+            pipeline.append(WithDevice(ExtractFirstItem(), _retrieve_device(module))) # gets the first item from tuple 
+        sequential = nn.Sequential(*pipeline)
+        pipe = Pipe(sequential, split_size = split_size)
         # END SOLUTION
         self.h_pp = pipe
 

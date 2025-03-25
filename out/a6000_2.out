@@ -1,0 +1,77 @@
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Thu_Mar_28_02:18:24_PDT_2024
+Cuda compilation tools, release 12.4, V12.4.131
+Build cuda_12.4.r12.4/compiler.34097967_0
+Fri Mar 21 11:15:45 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX A6000               On  |   00000000:B3:00.0 Off |                  Off |
+| 30%   29C    P8             26W /  270W |       2MiB /  49140MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA RTX A6000               On  |   00000000:B4:00.0 Off |                  Off |
+| 30%   28C    P8             24W /  270W |       2MiB /  49140MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 30 deselected / 4 selected
+
+tests/test_pipeline.py::test_clock_cycles_0 PASSED                       [ 25%]
+tests/test_pipeline.py::test_clock_cycles_1 PASSED                       [ 50%]
+tests/test_pipeline.py::test_split_module_0 PASSED                       [ 75%]
+tests/test_pipeline.py::test_split_module_1 PASSED                       [100%]
+
+======================= 4 passed, 30 deselected in 2.05s =======================
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 14 deselected / 20 selected
+
+tests/test_pipeline.py::test_forward_0[1-1] PASSED                       [  5%]
+tests/test_pipeline.py::test_forward_0[1-16] PASSED                      [ 10%]
+tests/test_pipeline.py::test_forward_0[1-32] PASSED                      [ 15%]
+tests/test_pipeline.py::test_forward_0[1-64] PASSED                      [ 20%]
+tests/test_pipeline.py::test_forward_0[2-1] PASSED                       [ 25%]
+tests/test_pipeline.py::test_forward_0[2-16] PASSED                      [ 30%]
+tests/test_pipeline.py::test_forward_0[2-32] PASSED                      [ 35%]
+tests/test_pipeline.py::test_forward_0[2-64] PASSED                      [ 40%]
+tests/test_pipeline.py::test_forward_0[4-1] PASSED                       [ 45%]
+tests/test_pipeline.py::test_forward_0[4-16] PASSED                      [ 50%]
+tests/test_pipeline.py::test_forward_0[4-32] PASSED                      [ 55%]
+tests/test_pipeline.py::test_forward_0[4-64] PASSED                      [ 60%]
+tests/test_pipeline.py::test_forward_0[8-1] PASSED                       [ 65%]
+tests/test_pipeline.py::test_forward_0[8-16] PASSED                      [ 70%]
+tests/test_pipeline.py::test_forward_0[8-32] PASSED                      [ 75%]
+tests/test_pipeline.py::test_forward_0[8-64] PASSED                      [ 80%]
+tests/test_pipeline.py::test_forward_0[16-1] PASSED                      [ 85%]
+tests/test_pipeline.py::test_forward_0[16-16] PASSED                     [ 90%]
+tests/test_pipeline.py::test_forward_0[16-32] PASSED                     [ 95%]
+tests/test_pipeline.py::test_forward_0[16-64] PASSED                     [100%]
+
+=============================== warnings summary ===============================
+tests/test_pipeline.py::test_forward_0[1-1]
+  /home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/linear.py:116: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at ../aten/src/ATen/cuda/CublasHandlePool.cpp:135.)
+    return F.linear(input, self.weight, self.bias)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 20 passed, 14 deselected, 1 warning in 7.48s =================

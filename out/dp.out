@@ -1,0 +1,141 @@
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Thu_Mar_28_02:18:24_PDT_2024
+Cuda compilation tools, release 12.4, V12.4.131
+Build cuda_12.4.r12.4/compiler.34097967_0
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 25 deselected / 9 selected
+
+tests/test_data_parallel.py::test_data_partition[2-64] PASSED            [ 11%]
+tests/test_data_parallel.py::test_data_partition[2-128] PASSED           [ 22%]
+tests/test_data_parallel.py::test_data_partition[2-512] PASSED           [ 33%]
+tests/test_data_parallel.py::test_data_partition[4-64] PASSED            [ 44%]
+tests/test_data_parallel.py::test_data_partition[4-128] PASSED           [ 55%]
+tests/test_data_parallel.py::test_data_partition[4-512] PASSED           [ 66%]
+tests/test_data_parallel.py::test_data_partition[8-64] PASSED            [ 77%]
+tests/test_data_parallel.py::test_data_partition[8-128] PASSED           [ 88%]
+tests/test_data_parallel.py::test_data_partition[8-512] PASSED           [100%]
+
+======================= 9 passed, 25 deselected in 2.05s =======================
+
+
+
+
+
+
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 33 deselected / 1 selected
+
+tests/test_data_parallel.py::test_gradient_accumulation PASSED           [100%]
+
+======================= 1 passed, 33 deselected in 1.87s =======================
+
+
+
+Epoch 0 on Rank 0: Training Time = 36.07007098197937, Tokens_per_sec = 104113.63863666085
+Epoch 0 on Rank 0: Validation Loss = 5.972262352705002
+Epoch 0 on Rank 0: {'bleu': 3.333596978755707}
+Epoch 1 on Rank 0: Training Time = 35.7384078502655, Tokens_per_sec = 105198.0141620345
+Epoch 1 on Rank 0: Validation Loss = 5.540686339139938
+Epoch 1 on Rank 0: {'bleu': 3.511946218230006}
+Epoch 2 on Rank 0: Training Time = 35.77734112739563, Tokens_per_sec = 105123.83041715014
+Epoch 2 on Rank 0: Validation Loss = 5.313071370124817
+Epoch 2 on Rank 0: {'bleu': 4.183339211596192}
+Epoch 3 on Rank 0: Training Time = 35.807311058044434, Tokens_per_sec = 105086.79082063939
+Epoch 3 on Rank 0: Validation Loss = 5.158657193183899
+Epoch 3 on Rank 0: {'bleu': 4.7262431285085}
+Epoch 4 on Rank 0: Training Time = 35.82406949996948, Tokens_per_sec = 105122.75558242966
+Epoch 4 on Rank 0: Validation Loss = 5.082838356494904
+Epoch 4 on Rank 0: {'bleu': 4.96253604884559}
+Epoch 5 on Rank 0: Training Time = 35.827298164367676, Tokens_per_sec = 104881.88227772736
+Epoch 5 on Rank 0: Validation Loss = 5.019561231136322
+Epoch 5 on Rank 0: {'bleu': 4.3579751374307705}
+Epoch 6 on Rank 0: Training Time = 35.76057982444763, Tokens_per_sec = 105013.53517299498
+Epoch 6 on Rank 0: Validation Loss = 5.01101016998291
+Epoch 6 on Rank 0: {'bleu': 5.039922305519238}
+Epoch 7 on Rank 0: Training Time = 35.70367383956909, Tokens_per_sec = 105115.8937453306
+Epoch 7 on Rank 0: Validation Loss = 5.040403962135315
+Epoch 7 on Rank 0: {'bleu': 4.888672047362779}
+Epoch 8 on Rank 0: Training Time = 35.717519760131836, Tokens_per_sec = 105176.01999505797
+Epoch 8 on Rank 0: Validation Loss = 5.07127919793129
+Epoch 8 on Rank 0: {'bleu': 5.241812032298771}
+Epoch 9 on Rank 0: Training Time = 35.69641590118408, Tokens_per_sec = 105216.84442851404
+Epoch 9 on Rank 0: Validation Loss = 5.145312279462814
+Epoch 9 on Rank 0: {'bleu': 5.297134885515208}
+Rank 0 training time: avg:35.79226880073547, std:0.1031459913907234,         tokens_per_second: avg: 105004.92052385394, std:311.14472730235883
+
+
+
+
+
+
+Epoch 0 on Rank 1: Training Time = 20.438742876052856, Tokens_per_sec = 101914.47334474316
+Epoch 0 on Rank 0: Training Time = 20.988311052322388, Tokens_per_sec = 101662.61617608133
+Epoch 0 on Rank 1: Validation Loss = 6.316789984703064
+Epoch 0 on Rank 0: Validation Loss = 6.316789984703064
+Epoch 0 on Rank 1: {'bleu': 3.018757896491123}
+Epoch 0 on Rank 0: {'bleu': 3.018757896491123}
+Epoch 1 on Rank 0: Training Time = 19.803000926971436, Tokens_per_sec = 104216.76177414395
+Epoch 1 on Rank 1: Training Time = 24.91880202293396, Tokens_per_sec = 104382.58041505815
+Epoch 1 on Rank 1: Validation Loss = 5.735258936882019
+Epoch 1 on Rank 0: Validation Loss = 5.735258936882019
+Epoch 1 on Rank 1: {'bleu': 2.023334098198781}
+Epoch 1 on Rank 0: {'bleu': 2.023334098198781}
+Epoch 2 on Rank 0: Training Time = 19.81112813949585, Tokens_per_sec = 104207.95891752215
+Epoch 2 on Rank 1: Training Time = 24.71306276321411, Tokens_per_sec = 104393.8277693629
+Epoch 2 on Rank 1: Validation Loss = 5.4372886419296265
+Epoch 2 on Rank 0: Validation Loss = 5.4372886419296265
+Epoch 2 on Rank 1: {'bleu': 3.9428050657251963}
+Epoch 2 on Rank 0: {'bleu': 3.9428050657251963}
+Epoch 3 on Rank 1: Training Time = 25.356281518936157, Tokens_per_sec = 104299.37303478099
+Epoch 3 on Rank 0: Training Time = 19.833987712860107, Tokens_per_sec = 104152.10257880882
+Epoch 3 on Rank 1: Validation Loss = 5.327924370765686
+Epoch 3 on Rank 0: Validation Loss = 5.327924370765686
+Epoch 3 on Rank 1: {'bleu': 4.501484359035413}
+Epoch 3 on Rank 0: {'bleu': 4.501484359035413}
+Epoch 4 on Rank 1: Training Time = 27.164461135864258, Tokens_per_sec = 104321.4669321751
+Epoch 4 on Rank 0: Training Time = 19.850437879562378, Tokens_per_sec = 104091.87808987926
+Epoch 4 on Rank 1: Validation Loss = 5.199769616127014
+Epoch 4 on Rank 0: Validation Loss = 5.199769616127014
+Epoch 4 on Rank 1: {'bleu': 4.924774225863962}
+Epoch 4 on Rank 0: {'bleu': 4.924774225863962}
+Epoch 5 on Rank 0: Training Time = 19.867029190063477, Tokens_per_sec = 103944.2289044258
+Epoch 5 on Rank 1: Training Time = 25.839139938354492, Tokens_per_sec = 104230.03411256164
+Epoch 5 on Rank 0: Validation Loss = 5.130459308624268
+Epoch 5 on Rank 1: Validation Loss = 5.130459308624268
+Epoch 5 on Rank 0: {'bleu': 4.3397703860704935}
+Epoch 5 on Rank 1: {'bleu': 4.3397703860704935}
+Epoch 6 on Rank 1: Training Time = 19.871575593948364, Tokens_per_sec = 104058.77735287386
+Epoch 6 on Rank 0: Training Time = 25.840182304382324, Tokens_per_sec = 104257.40882312783
+Epoch 6 on Rank 0: Validation Loss = 5.148822069168091
+Epoch 6 on Rank 1: Validation Loss = 5.148822069168091
+Epoch 6 on Rank 0: {'bleu': 4.899602710712113}
+Epoch 6 on Rank 1: {'bleu': 4.899602710712113}
+Epoch 7 on Rank 1: Training Time = 19.864055156707764, Tokens_per_sec = 104116.6090285269
+Epoch 7 on Rank 0: Training Time = 26.14194631576538, Tokens_per_sec = 104156.5752128532
+Epoch 7 on Rank 1: Validation Loss = 5.107152938842773
+Epoch 7 on Rank 0: Validation Loss = 5.107152938842773
+Epoch 7 on Rank 1: {'bleu': 4.888609975642586}
+Epoch 7 on Rank 0: {'bleu': 4.888609975642586}
+Epoch 8 on Rank 1: Training Time = 25.568817853927612, Tokens_per_sec = 104263.42944765752
+Epoch 8 on Rank 0: Training Time = 19.88276243209839, Tokens_per_sec = 103859.97322323412
+Epoch 8 on Rank 1: Validation Loss = 5.090423882007599
+Epoch 8 on Rank 0: Validation Loss = 5.090423882007599
+Epoch 8 on Rank 1: {'bleu': 4.218764487460828}
+Epoch 8 on Rank 0: {'bleu': 4.218764487460828}
+Epoch 9 on Rank 1: Training Time = 25.544301748275757, Tokens_per_sec = 104294.52058024998
+Epoch 9 on Rank 0: Training Time = 19.90045142173767, Tokens_per_sec = 103863.15438938895
+Epoch 9 on Rank 1: Validation Loss = 5.131102383136749
+Epoch 9 on Rank 0: Validation Loss = 5.131102383136749
+Epoch 9 on Rank 1: {'bleu': 5.186994797631091}
+Rank 1 training time: avg:23.927924060821532, std:2.611800016808934,         tokens_per_second: avg: 104027.50920179902, std:711.5049358974856
+Epoch 9 on Rank 0: {'bleu': 5.186994797631091}
+Rank 0 training time: avg:21.19192373752594, std:2.424188866289119,         tokens_per_second: avg: 103841.26580894654, std:739.28524915424

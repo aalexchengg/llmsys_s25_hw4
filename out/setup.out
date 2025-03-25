@@ -1,0 +1,101 @@
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Thu_Mar_28_02:18:24_PDT_2024
+Cuda compilation tools, release 12.4, V12.4.131
+Build cuda_12.4.r12.4/compiler.34097967_0
+Sun Mar 23 22:22:13 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.35.03              Driver Version: 560.35.03      CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L40                     On  |   00000000:41:00.0 Off |                    0 |
+| N/A   22C    P8             33W /  261W |       1MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA L40                     On  |   00000000:61:00.0 Off |                    0 |
+| N/A   22C    P8             33W /  261W |       1MiB /  46068MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 30 deselected / 4 selected
+
+tests/test_pipeline.py::test_clock_cycles_0 PASSED                       [ 25%]
+tests/test_pipeline.py::test_clock_cycles_1 PASSED                       [ 50%]
+tests/test_pipeline.py::test_split_module_0 PASSED                       [ 75%]
+tests/test_pipeline.py::test_split_module_1 PASSED                       [100%]
+
+======================= 4 passed, 30 deselected in 1.80s =======================
+============================= test session starts ==============================
+platform linux -- Python 3.9.21, pytest-8.3.5, pluggy-1.5.0 -- /home/abcheng/miniconda3/envs/hw4/bin/python
+cachedir: .pytest_cache
+rootdir: /home/abcheng/workspace/llmsys_s25_hw4
+configfile: pytest.ini
+collecting ... collected 34 items / 14 deselected / 20 selected
+
+tests/test_pipeline.py::test_forward_0[1-1] PASSED                       [  5%]
+tests/test_pipeline.py::test_forward_0[1-16] PASSED                      [ 10%]
+tests/test_pipeline.py::test_forward_0[1-32] PASSED                      [ 15%]
+tests/test_pipeline.py::test_forward_0[1-64] PASSED                      [ 20%]
+tests/test_pipeline.py::test_forward_0[2-1] PASSED                       [ 25%]
+tests/test_pipeline.py::test_forward_0[2-16] PASSED                      [ 30%]
+tests/test_pipeline.py::test_forward_0[2-32] PASSED                      [ 35%]
+tests/test_pipeline.py::test_forward_0[2-64] PASSED                      [ 40%]
+tests/test_pipeline.py::test_forward_0[4-1] PASSED                       [ 45%]
+tests/test_pipeline.py::test_forward_0[4-16] PASSED                      [ 50%]
+tests/test_pipeline.py::test_forward_0[4-32] PASSED                      [ 55%]
+tests/test_pipeline.py::test_forward_0[4-64] PASSED                      [ 60%]
+tests/test_pipeline.py::test_forward_0[8-1] PASSED                       [ 65%]
+tests/test_pipeline.py::test_forward_0[8-16] PASSED                      [ 70%]
+tests/test_pipeline.py::test_forward_0[8-32] PASSED                      [ 75%]
+tests/test_pipeline.py::test_forward_0[8-64] PASSED                      [ 80%]
+tests/test_pipeline.py::test_forward_0[16-1] PASSED                      [ 85%]
+tests/test_pipeline.py::test_forward_0[16-16] PASSED                     [ 90%]
+tests/test_pipeline.py::test_forward_0[16-32] PASSED                     [ 95%]
+tests/test_pipeline.py::test_forward_0[16-64] PASSED                     [100%]
+
+=============================== warnings summary ===============================
+tests/test_pipeline.py::test_forward_0[1-1]
+  /home/abcheng/miniconda3/envs/hw4/lib/python3.9/site-packages/torch/nn/modules/linear.py:116: UserWarning: Attempting to run cuBLAS, but there was no current CUDA context! Attempting to set the primary context... (Triggered internally at ../aten/src/ATen/cuda/CublasHandlePool.cpp:135.)
+    return F.linear(input, self.weight, self.bias)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 20 passed, 14 deselected, 1 warning in 1.63s =================
+Running model parallel....
+
+
+
+Epoch 0: Training Time = 23.904003858566284, Tokens_per_sec = 26773.757391720315
+Epoch 0: Validation Loss = 5.841219887137413
+Epoch 0: {'bleu': 0.38067909033292824}
+Epoch 1: Training Time = 23.62405228614807, Tokens_per_sec = 27091.03384330313
+Epoch 1: Validation Loss = 5.468955487012863
+Epoch 1: {'bleu': 3.5056181650872507}
+Training time: avg:23.764028072357178, std:0.13997578620910645,         tokens_per_second: avg: 26932.39561751172, std:158.6382257914065
+Finished running model parallel.
+Running pipeline parallel...
+
+
+
+Epoch 0: Training Time = 23.809808015823364, Tokens_per_sec = 26879.679146285976
+Epoch 0: Validation Loss = 5.792857304215431
+Epoch 0: {'bleu': 0.6903745643959034}
+Epoch 1: Training Time = 23.65886163711548, Tokens_per_sec = 27051.174727527155
+Epoch 1: Validation Loss = 5.431311324238777
+Epoch 1: {'bleu': 2.489597440573579}
+Training time: avg:23.73433482646942, std:0.07547318935394287,         tokens_per_second: avg: 26965.426936906566, std:85.74779062058951
+Finished running pipeline parallel
